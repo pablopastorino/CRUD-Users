@@ -1,0 +1,42 @@
+### GET - Obtener todas las personas
+GET http://localhost:5109/api/person
+Accept: application/json
+
+###
+
+### POST - Crear una nueva persona
+POST http://localhost:5109/api/person
+Content-Type: application/json
+
+{
+  "userName": "Carlos",
+  "userAge": 28
+}
+
+###
+
+### POST - Crear otra persona (ejemplo adicional)
+POST http://localhost:5109/api/person
+Content-Type: application/json
+
+{
+  "userName": "Ana",
+  "userAge": 35
+}
+
+###
+
+### PUT - Actualizar una persona (ID: 1)
+PUT http://localhost:5109/api/person/1
+Content-Type: application/json
+
+{
+  "name": "Carlos Actualizado"
+}
+
+###
+
+### DELETE - Eliminar una persona (ID: 1)
+DELETE http://localhost:5109/api/person/1
+
+###
