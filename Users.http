@@ -1,0 +1,304 @@
+### ========================================
+### CONTROLADOR DE USUARIOS - PRUEBAS CRUD
+### ========================================
+
+### Variables
+@baseUrl = http://localhost:5109
+@userId = 1
+
+### ========================================
+### READ OPERATIONS (GET)
+### ========================================
+
+### 1. GET - Obtener todos los usuarios activos
+GET {{baseUrl}}/api/users
+Accept: application/json
+
+###
+
+### 2. GET - Obtener usuario por ID
+GET {{baseUrl}}/api/users/{{userId}}
+Accept: application/json
+
+###
+
+### 3. GET - Obtener usuario específico (ID 2)
+GET {{baseUrl}}/api/users/2
+Accept: application/json
+
+###
+
+### 4. GET - Buscar usuarios por nombre
+GET {{baseUrl}}/api/users/search?search=Juan
+Accept: application/json
+
+###
+
+### 5. GET - Buscar usuarios por email
+GET {{baseUrl}}/api/users/search?search=maria
+Accept: application/json
+
+###
+
+### 6. GET - Búsqueda vacía (devuelve error 400)
+GET {{baseUrl}}/api/users/search
+Accept: application/json
+
+###
+
+### 7. GET - Estadísticas de usuarios
+GET {{baseUrl}}/api/users/stats
+Accept: application/json
+
+###
+
+### ========================================
+### CREATE OPERATIONS (POST)
+### ========================================
+
+### 8. POST - Crear nuevo usuario
+POST {{baseUrl}}/api/users
+Content-Type: application/json
+
+{
+  "name": "Ana Rodríguez",
+  "email": "ana.rodriguez@email.com",
+  "age": 27
+}
+
+###
+
+### 9. POST - Crear otro usuario
+POST {{baseUrl}}/api/users
+Content-Type: application/json
+
+{
+  "name": "Pedro Martínez",
+  "email": "pedro.martinez@email.com",
+  "age": 35
+}
+
+###
+
+### 10. POST - Crear usuario con email existente (debería fallar - 409)
+POST {{baseUrl}}/api/users
+Content-Type: application/json
+
+{
+  "name": "Otro Juan",
+  "email": "juan@email.com",
+  "age": 30
+}
+
+###
+
+### 11. POST - Crear usuario con datos inválidos (debería fallar - 400)
+POST {{baseUrl}}/api/users
+Content-Type: application/json
+
+{
+  "name": "A",
+  "email": "email-invalido",
+  "age": 15
+}
+
+###
+
+### ========================================
+### UPDATE OPERATIONS (PUT/PATCH)
+### ========================================
+
+### 12. PUT - Actualizar usuario completo
+PUT {{baseUrl}}/api/users/1
+Content-Type: application/json
+
+{
+  "name": "Juan Carlos Pérez Actualizado",
+  "email": "juan.carlos.nuevo@email.com",
+  "age": 26,
+  "isActive": true
+}
+
+###
+
+### 13. PUT - Actualizar solo nombre
+PUT {{baseUrl}}/api/users/2
+Content-Type: application/json
+
+{
+  "name": "María García Actualizada"
+}
+
+###
+
+### 14. PUT - Actualizar solo email
+PUT {{baseUrl}}/api/users/3
+Content-Type: application/json
+
+{
+  "email": "carlos.lopez.nuevo@email.com"
+}
+
+###
+
+### 15. PATCH - Actualización parcial
+PATCH {{baseUrl}}/api/users/1
+Content-Type: application/json
+
+{
+  "age": 28
+}
+
+###
+
+### 16. PATCH - Reactivar usuario
+PATCH {{baseUrl}}/api/users/1/activate
+Content-Type: application/json
+
+###
+
+### ========================================
+### DELETE OPERATIONS
+### ========================================
+
+### 17. DELETE - Eliminación suave (soft delete)
+DELETE {{baseUrl}}/api/users/3
+
+###
+
+### 18. DELETE - Eliminación permanente
+DELETE {{baseUrl}}/api/users/3/permanent
+
+###
+
+### ========================================
+### CASOS DE ERROR
+### ========================================
+
+### 19. GET - Usuario inexistente (404)
+GET {{baseUrl}}/api/users/999
+Accept: application/json
+
+###
+
+### 20. PUT - Actualizar usuario inexistente (404)
+PUT {{baseUrl}}/api/users/999
+Content-Type: application/json
+
+{
+  "name": "Usuario Inexistente"
+}
+
+###
+
+### 21. DELETE - Eliminar usuario inexistente (404)
+DELETE {{baseUrl}}/api/users/999
+
+###
+
+### ========================================
+### FLUJO COMPLETO DE PRUEBA
+### ========================================
+
+### 22. Flujo: Crear → Leer → Actualizar → Eliminar
+
+# Paso 1: Crear usuario
+POST {{baseUrl}}/api/users
+Content-Type: application/json
+
+{
+  "name": "Usuario Prueba",
+  "email": "prueba@test.com",
+  "age": 25
+}
+
+###
+
+# Paso 2: Leer el usuario creado (usar ID de la respuesta anterior)
+GET {{baseUrl}}/api/users/4
+Accept: application/json
+
+###
+
+# Paso 3: Actualizar el usuario
+PUT {{baseUrl}}/api/users/4
+Content-Type: application/json
+
+{
+  "name": "Usuario Prueba Actualizado",
+  "age": 26
+}
+
+###
+
+# Paso 4: Eliminar el usuario (soft delete)
+DELETE {{baseUrl}}/api/users/4
+
+###
+
+# Paso 5: Verificar que está eliminado (debería retornar 404)
+GET {{baseUrl}}/api/users/4
+Accept: application/json
+
+###
+
+# Paso 6: Reactivar el usuario
+PATCH {{baseUrl}}/api/users/4/activate
+
+###
+
+# Paso 7: Verificar que está activo nuevamente
+GET {{baseUrl}}/api/users/4
+Accept: application/json
+
+###
+
+### ========================================
+### PRUEBAS DE VALIDACIÓN
+### ========================================
+
+### 23. POST - Nombre muy corto
+POST {{baseUrl}}/api/users
+Content-Type: application/json
+
+{
+  "name": "A",
+  "email": "test@email.com",
+  "age": 25
+}
+
+###
+
+### 24. POST - Email inválido
+POST {{baseUrl}}/api/users
+Content-Type: application/json
+
+{
+  "name": "Test User",
+  "email": "email-sin-arroba",
+  "age": 25
+}
+
+###
+
+### 25. POST - Edad fuera de rango
+POST {{baseUrl}}/api/users
+Content-Type: application/json
+
+{
+  "name": "Test User",
+  "email": "test@email.com",
+  "age": 150
+}
+
+###
+
+### 26. POST - Campos requeridos vacíos
+POST {{baseUrl}}/api/users
+Content-Type: application/json
+
+{
+  "age": 25
+}
+
+###
