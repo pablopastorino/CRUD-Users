@@ -4,6 +4,7 @@ using System.IO;
 using System.Text.Json;
 using System.Collections.Generic;
 using System.Xml.Serialization;
+using System.Xml;
 
 namespace UserManagement.Controllers
 {
@@ -20,25 +21,39 @@ namespace UserManagement.Controllers
     public class PersonController : ControllerBase
 
     {
-
-        [HttpGet]
-
-        public ActionResult<List<Person>> Get()
-
+        [HttpGet("binary")]
+        public ActionResult<Person> GetFromBinary()
         {
-
-            return new List<Person>
-
+            Person binaryDeserializedPerson;
+            using (var fs = new FileStream("person.dat", FileMode.Open))
+            using (var reader = new BinaryReader(fs))
             {
+                binaryDeserializedPerson = new Person
+                {
+                    UserName = reader.ReadString(),
+                    UserAge = reader.ReadInt32()
+                };
+            }
 
-                new() { UserName = "Jhon", UserAge = 52 },
+            Console.WriteLine($"Binary Deserialization - UserName: {binaryDeserializedPerson.UserName}, UserAge: {binaryDeserializedPerson.UserAge}");
+            return binaryDeserializedPerson;
+        }
 
-                new() { UserName = "Mary", UserAge = 33 },
+        [HttpGet("xml")]
+        public ActionResult<Person> GetFromXml()
+        {
+            XmlSerializer serializer = new(typeof(Person));
+            using var fs = new FileStream("person.xml", FileMode.Open);
+            Console.WriteLine($"XML Deserialization");
+            return (Person)serializer.Deserialize(fs)!;
+        }
 
-                new() { UserName = "Bety", UserAge = 40 }
-
-            };
-
+        [HttpGet("json")]
+        public ActionResult<Person> GetFromJson()
+        {
+            string jsonString = System.IO.File.ReadAllText("person.json");
+            Console.WriteLine($"JSON Deserialization");
+            return JsonSerializer.Deserialize<Person>(jsonString)!;
         }
 
         [HttpPost]
